@@ -1,0 +1,20 @@
+version: '3.8'
+services:
+#  goapp:
+#    build: .
+#    ports:
+#      - "8080:8080"
+#    volumes:
+#      - .:/app
+  db:
+    image: postgres:14.1-alpine
+    container_name: rpg-go-ps
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=mcc
+    ports:
+      - '5432:5432'
+    volumes:
+      - ./db-store:/var/lib/postgresql/data
