@@ -3,12 +3,13 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/jackc/pgx/v4/pgxpool"
 	"net/http"
 	"net/url"
 	"rpg-go/config"
 	"rpg-go/internal/repository/sql"
 	"time"
+
+	"github.com/jackc/pgx/v4/pgxpool"
 )
 
 func setup() (*http.Server, error) {

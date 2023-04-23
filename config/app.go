@@ -1,8 +1,9 @@
 package config
 
 import (
-	"github.com/jackc/pgx/v4/pgxpool"
 	"rpg-go/internal/repository/sql"
+
+	"github.com/jackc/pgx/v4/pgxpool"
 )
 
 type AppConfig struct {

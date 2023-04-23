@@ -4,6 +4,7 @@ import (
 	"context"
 	db "database/sql"
 	"rpg-go/internal/dto"
+	"rpg-go/internal/helpers"
 	"rpg-go/internal/repository/sql"
 )
 
@@ -51,20 +52,23 @@ func (ws *WeaponsService) CreateWeapon(ctx context.Context, in dto.CreateWeaponI
 	if in.WeaponTypeID > 0 {
 		wt, err := ws.GetWeaponTypeByID(ctx, in.WeaponTypeID)
 		if err != nil {
-			return err
+			return helpers.WrapError(err, helpers.ErrorCodeInvalidArgument, "WeaponsService.CreateWeapon")
 		}
 
 		args.WeaponTypeID = db.NullInt32{Int32: wt.ID, Valid: true}
 	}
 
 	err := ws.repo.CreateWeapons(ctx, args)
-	return err
+	if err != nil {
+		return helpers.WrapError(err, helpers.ErrorCodeInvalidArgument, "WeaponsService.CreateWeapon")
+	}
+	return nil
 }
 
 func (ws *WeaponsService) ListWeapon(ctx context.Context) ([]dto.WeaponOutputDTO, error) {
 	w, err := ws.repo.ListWeapons(ctx)
 	if err != nil {
-		return []dto.WeaponOutputDTO{}, err
+		return []dto.WeaponOutputDTO{}, helpers.WrapError(err, helpers.ErrorCodeInvalidArgument, "WeaponsService.ListWeapon")
 	}
 
 	var out []dto.WeaponOutputDTO
@@ -109,13 +113,16 @@ func (ws *WeaponsService) CreateWeaponType(ctx context.Context, in dto.CreateWea
 	}
 
 	err := ws.repo.CreateWeaponsType(ctx, args)
-	return err
+	if err != nil {
+		return helpers.WrapError(err, helpers.ErrorCodeInvalidArgument, "WeaponsService.CreateWeaponType")
+	}
+	return nil
 }
 
 func (ws *WeaponsService) ListWeaponType(ctx context.Context) ([]dto.WeaponTypeOutputDTO, error) {
 	wt, err := ws.repo.ListWeaponsType(ctx)
 	if err != nil {
-		return []dto.WeaponTypeOutputDTO{}, err
+		return []dto.WeaponTypeOutputDTO{}, helpers.WrapError(err, helpers.ErrorCodeInvalidArgument, "WeaponsService.ListWeaponType")
 	}
 
 	var out []dto.WeaponTypeOutputDTO
@@ -129,7 +136,7 @@ func (ws *WeaponsService) ListWeaponType(ctx context.Context) ([]dto.WeaponTypeO
 func (ws *WeaponsService) GetWeaponTypeByID(ctx context.Context, id int32) (dto.WeaponTypeOutputDTO, error) {
 	wt, err := ws.repo.GetWeaponsTypeByID(ctx, id)
 	if err != nil {
-		return dto.WeaponTypeOutputDTO{}, err
+		return dto.WeaponTypeOutputDTO{}, helpers.WrapError(err, helpers.ErrorCodeNotFound, "WeaponsService.GetWeaponTypeByID")
 	}
 
 	out := dto.WeaponTypeOutputDTO{
@@ -143,7 +150,7 @@ func (ws *WeaponsService) GetWeaponTypeByID(ctx context.Context, id int32) (dto.
 func (ws *WeaponsService) GetWeaponTypeByName(ctx context.Context, name string) (dto.WeaponTypeOutputDTO, error) {
 	wt, err := ws.repo.GetWeaponsTypeByName(ctx, name)
 	if err != nil {
-		return dto.WeaponTypeOutputDTO{}, err
+		return dto.WeaponTypeOutputDTO{}, helpers.WrapError(err, helpers.ErrorCodeNotFound, "WeaponsService.GetWeaponTypeByName")
 	}
 
 	out := dto.WeaponTypeOutputDTO{
@@ -157,7 +164,7 @@ func (ws *WeaponsService) GetWeaponTypeByName(ctx context.Context, name string) 
 func (ws *WeaponsService) UpdateWeaponType(ctx context.Context, id int32, in dto.UpdateWeaponTypeInputDTO) error {
 	wt, err := ws.repo.GetWeaponsTypeByID(ctx, id)
 	if err != nil {
-		return err
+		return helpers.WrapError(err, helpers.ErrorCodeNotFound, "WeaponsService.UpdateWeaponType")
 	}
 
 	arg := sql.UpdateWeaponsTypeParams{
@@ -166,15 +173,21 @@ func (ws *WeaponsService) UpdateWeaponType(ctx context.Context, id int32, in dto
 	}
 
 	err = ws.repo.UpdateWeaponsType(ctx, arg)
-	return err
+	if err != nil {
+		return helpers.WrapError(err, helpers.ErrorCodeInvalidArgument, "WeaponsService.UpdateWeaponType")
+	}
+	return nil
 }
 
 func (ws *WeaponsService) DeleteWeaponType(ctx context.Context, id int32) error {
 	wt, err := ws.repo.GetWeaponsTypeByID(ctx, id)
 	if err != nil {
-		return err
+		return helpers.WrapError(err, helpers.ErrorCodeNotFound, "WeaponsService.DeleteWeaponType")
 	}
 
 	err = ws.repo.DeleteWeaponsType(ctx, wt.ID)
-	return err
+	if err != nil {
+		return helpers.WrapError(err, helpers.ErrorCodeInvalidArgument, "WeaponsService.DeleteWeaponType")
+	}
+	return nil
 }

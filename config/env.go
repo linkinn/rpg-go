@@ -26,13 +26,13 @@ func LoadEnv(path string) (*EnvConf, error) {
 	viper.AutomaticEnv()
 	err := viper.ReadInConfig()
 	if err != nil {
-		panic(err)
+		return &EnvConf{}, err
 	}
 
 	err = viper.Unmarshal(&conf)
 	if err != nil {
-		panic(err)
+		return &EnvConf{}, err
 	}
 
-	return conf, err
+	return conf, nil
 }
